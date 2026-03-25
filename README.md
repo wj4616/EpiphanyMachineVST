@@ -193,3 +193,5 @@ The MORPH knob uses an animated colour ring that transitions neon-secondary → 
 - [Cytomic TPT SVF filter design](https://cytomic.com/files/dsp/SvfLinearTrapOptimised2.pdf) — Andy Simper's optimised state variable filter
 - [JUCE framework](https://juce.com)
 - Feedback delay networks: Jot & Chaigne, "Digital Delay Networks for Designing Artificial Reverberators" (1991)
+
+Epiphany Machine.so sha512sum 8e72d4616e0bc9577be5fc60ce846755c2f8c989a22d654af5d08a1e3ba707fb5c683fd24c935fff78d2aea8828a865f74a69669d73e7e4e37d0fc4ac5480a09 
