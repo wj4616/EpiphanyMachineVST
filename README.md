@@ -14,7 +14,7 @@
 
 ---
 
-[Epiphany Machine VST Manual](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
+[User Manual & Sound Design Guide — v2.0](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
 
 By the way, you want to download the Epiphany Machine.so and place in correct location on your system. Full source code is provided. sha512 checksum hash provided at bottom.
 
