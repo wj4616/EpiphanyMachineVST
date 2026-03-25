@@ -168,7 +168,7 @@ EpiphanyMachineVST/
 
 ## GUI
 
-950×580 pixel interface with a cyberpunk colour scheme:
+950×580 pixel interface with a cyberpunk colour scheme (.png image in repository):
 
 | Colour | Hex | Used For |
 |---|---|---|
