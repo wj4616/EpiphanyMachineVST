@@ -14,7 +14,7 @@
 
 ---
 
-###[Epiphany Machine VST Manual](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
+[Epiphany Machine VST Manual](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
 
 ## What Is It?
 
