@@ -22,6 +22,9 @@ void GlitchEngine::reset()
     grainSpeed = 1.0f;
     crossfadeCounter = 0;
     prevSampleL = prevSampleR = 0.0f;
+    inputPeak    = 0.0f;
+    silenceCount = 0;
+    isSilent     = false;
 }
 
 //==============================================================================
@@ -48,6 +51,29 @@ void GlitchEngine::process(juce::AudioBuffer<float>& buffer)
         bufL[writeHead & kBufMask] = inL[i];
         bufR[writeHead & kBufMask] = inR[i];
         ++writeHead;
+
+        // ---- Silence gate ----
+        // Track a slow-decay peak so brief inter-note gaps don't trigger the gate.
+        // If the peak stays below -80dBFS for 50ms, mark as silent and clear the
+        // buffer so grains can't play back stale audio from the previous note.
+        const float absPeak = juce::jmax(std::abs(inL[i]), std::abs(inR[i]));
+        inputPeak = juce::jmax(absPeak, inputPeak * 0.9999f);
+
+        if (inputPeak < kSilenceThreshold)
+        {
+            const int silenceLimit = (int)(0.05 * sampleRate);  // 50ms
+            if (++silenceCount >= silenceLimit && !isSilent)
+            {
+                isSilent = true;
+                bufL.fill(0.0f);
+                bufR.fill(0.0f);
+            }
+        }
+        else
+        {
+            silenceCount = 0;
+            isSilent     = false;
+        }
 
         // ---- 2. Check if it's time to trigger a new grain ----
         if (grainSamplesLeft <= 0)
@@ -94,6 +120,13 @@ void GlitchEngine::process(juce::AudioBuffer<float>& buffer)
             outL = outL * (1.0f - t) + prevSampleL * t;
             outR = outR * (1.0f - t) + prevSampleR * t;
             --crossfadeCounter;
+        }
+
+        // Gate output: silent input must produce silent output — never play stale grains
+        if (isSilent)
+        {
+            outL = outR = 0.0f;
+            prevSampleL = prevSampleR = 0.0f;
         }
 
         prevSampleL = outL;

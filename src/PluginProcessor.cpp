@@ -107,6 +107,7 @@ void EpiphanyMachineProcessor::prepareToPlay(double sr, int spb)
     wetBuffer.setSize(2, spb);
     filteredBuffer.setSize(2, spb);
     processedBuffer.setSize(2, spb);
+    fbBuf.setSize(2, 1);
 
     // Smoothers — 20ms ramp for most params
     const double sm = 0.02;
@@ -324,7 +325,6 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         float fbSendR = wetBuffer.getSample(1, N-1) * fbGain;
 
         // PitchDrifter processes a 1-sample buffer (granular pitch shifting)
-        juce::AudioBuffer<float> fbBuf(2, 1);
         fbBuf.setSample(0, 0, fbSendL);
         fbBuf.setSample(1, 0, fbSendR);
         pitchDrifter.process(fbBuf);

@@ -118,10 +118,14 @@ void DiffusionNetwork::process(juce::AudioBuffer<float>& buffer)
             lpfStateL[line] = (1.0f - activeDamping) * fbL + activeDamping * lpfStateL[line];
             lpfStateR[line] = (1.0f - activeDamping) * fbR + activeDamping * lpfStateR[line];
 
-            // Denormal prevention: tiny constant flushes subnormal floats
-            // that cause massive CPU spikes in long reverb tails
-            bufL[line][writeIndex[line]] = inSampleL + lpfStateL[line] + 1.0e-18f;
-            bufR[line][writeIndex[line]] = inSampleR + lpfStateR[line] + 1.0e-18f;
+            // Denormal prevention: inject tiny offset into the LPF state only —
+            // not into the delay line itself, which would accumulate a DC oscillation
+            // via the LFO-modulated read pointer.
+            lpfStateL[line] += 1.0e-18f;
+            lpfStateR[line] += 1.0e-18f;
+
+            bufL[line][writeIndex[line]] = inSampleL + lpfStateL[line];
+            bufR[line][writeIndex[line]] = inSampleR + lpfStateR[line];
 
             writeIndex[line] = (writeIndex[line] + 1) & kBufMask;
         }

@@ -59,6 +59,7 @@ private:
     juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> filteredBuffer;
     juce::AudioBuffer<float> processedBuffer;
+    juce::AudioBuffer<float> fbBuf;  // feedback pitch-drift buffer — pre-allocated, never heap in processBlock
 
     // SmoothedValues for per-sample parameters
     juce::SmoothedValue<float> morphSmoothed;
