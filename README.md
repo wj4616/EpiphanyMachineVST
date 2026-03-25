@@ -1,6 +1,6 @@
 # Epiphany Machine
 
-**A cyberpunk ambient glitch reverb VST3 plugin built with JUCE + CMake**
+**A creative ambient glitch reverb VST3 plugin built with JUCE + CMake**
 
 > Texture-aware diffusion, granular pitch drift, dual-band filtering, and 34 factory presets with smooth morphing — all in a 950×580 cyberpunk GUI.
 
