@@ -196,4 +196,5 @@ The MORPH knob uses an animated colour ring that transitions neon-secondary → 
 - [JUCE framework](https://juce.com)
 - Feedback delay networks: Jot & Chaigne, "Digital Delay Networks for Designing Artificial Reverberators" (1991)
 
-Epiphany Machine.so sha512sum 8e72d4616e0bc9577be5fc60ce846755c2f8c989a22d654af5d08a1e3ba707fb5c683fd24c935fff78d2aea8828a865f74a69669d73e7e4e37d0fc4ac5480a09 
+sha512sum Epiphany Machine.so
+2cff5230a368a09e10b0d0e6d68553971dc72dbe01687c3059b5a27e79c0f3742b168e9e50a8312cb902de1f15bd61782a3e6f4692b1909b41b71316b8c5201d
