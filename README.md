@@ -1,6 +1,6 @@
-# Epiphany Machine
+# Epiphany Machine VST
 
-**A cyberpunk ambient glitch reverb VST3 plugin built with JUCE + CMake**
+**A creative ambient glitch reverb VST3 plugin built with JUCE + CMake**
 
 > Texture-aware diffusion, granular pitch drift, dual-band filtering, and 34 factory presets with smooth morphing — all in a 950×580 cyberpunk GUI.
 
@@ -13,6 +13,10 @@
 ### [epiphanymachineart.com](https://epiphanymachineart.com)
 
 ---
+
+[User Manual & Sound Design Guide — v2.0](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
+
+By the way, you want to download the Epiphany Machine.so file and place in correct location on your system. Full source code is provided. sha512 checksum hash provided at bottom.
 
 ## What Is It?
 
@@ -164,7 +168,7 @@ EpiphanyMachineVST/
 
 ## GUI
 
-950×580 pixel interface with a cyberpunk colour scheme:
+950×580 pixel interface with a cyberpunk colour scheme (.png image in repository):
 
 | Colour | Hex | Used For |
 |---|---|---|
@@ -191,3 +195,5 @@ The MORPH knob uses an animated colour ring that transitions neon-secondary → 
 - [Cytomic TPT SVF filter design](https://cytomic.com/files/dsp/SvfLinearTrapOptimised2.pdf) — Andy Simper's optimised state variable filter
 - [JUCE framework](https://juce.com)
 - Feedback delay networks: Jot & Chaigne, "Digital Delay Networks for Designing Artificial Reverberators" (1991)
+
+Epiphany Machine.so sha512sum 8e72d4616e0bc9577be5fc60ce846755c2f8c989a22d654af5d08a1e3ba707fb5c683fd24c935fff78d2aea8828a865f74a69669d73e7e4e37d0fc4ac5480a09 
