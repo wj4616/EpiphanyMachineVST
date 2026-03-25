@@ -130,11 +130,10 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --target EpiphanyMachine_VST3
 ```
 
-The plugin is automatically installed to `~/.vst3/` after a successful build.
 
 ### DAW Setup (REAPER on Linux)
 1. Options → Preferences → Plug-ins → VST
-2. Add `~/.vst3` to the VST path
+2. Add `~/.vst3` to the VST path and place Epiphany Machine.so file in directory
 3. Re-scan plugins
 4. Add **Epiphany Machine** to an FX chain
 
