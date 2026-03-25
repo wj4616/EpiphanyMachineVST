@@ -1,4 +1,4 @@
-# Epiphany Machine
+# Epiphany Machine VST
 
 **A creative ambient glitch reverb VST3 plugin built with JUCE + CMake**
 
