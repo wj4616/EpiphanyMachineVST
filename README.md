@@ -14,6 +14,8 @@
 
 ---
 
+###[Epiphany Machine VST Manual](https://github.com/wj4616/EpiphanyMachineVST/blob/main/epiphany-machine-VST-v2-manual-full.md)
+
 ## What Is It?
 
 Epiphany Machine is a creative reverb and glitch processor for ambient, experimental, and cinematic music production. It uses a **texture-body detection system** to split your input signal into transient texture and sustained body components, routing each through independently tunable DSP chains.
