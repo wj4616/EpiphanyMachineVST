@@ -68,6 +68,8 @@ private:
     juce::SmoothedValue<float> glitchFocusSmoothed;
     juce::SmoothedValue<float> bypassSmoothed;
 
+    int lastPresetIdx = 0;
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EpiphanyMachineProcessor)
 };

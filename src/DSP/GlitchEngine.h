@@ -48,12 +48,6 @@ private:
     float chaos   = 0.2f;
     double sampleRate = 48000.0;
 
-    // Silence gate — prevents stale-buffer grain playback when input is silent
-    static constexpr float kSilenceThreshold = 0.0001f;  // ~-80dBFS
-    float inputPeak    = 0.0f;   // slow-decay peak tracker
-    int   silenceCount = 0;      // consecutive silent samples
-    bool  isSilent     = false;
-
     juce::Random rng;  // single instance, not per-sample
 
     void triggerNewGrain();

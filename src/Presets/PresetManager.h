@@ -2,6 +2,8 @@
 #include <JuceHeader.h>
 #include "PresetData.h"
 #include <set>
+#include <atomic>
+#include <unordered_map>
 
 //==============================================================================
 // PresetManager — handles preset selection and smooth parameter morphing.
@@ -48,7 +50,8 @@ private:
     std::set<int> excludedParams;
 
     // Flag to suppress listener during programmatic writes
-    bool systemChanging = false;
+    std::atomic<bool> systemChanging{false};
+    std::unordered_map<std::string, int> paramIndexCache;
 
     // Capture current APVTS float values into a PresetData struct
     PresetData captureCurrentValues() const;

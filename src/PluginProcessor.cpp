@@ -187,10 +187,9 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     // Advance preset morph (writes interpolated values to APVTS each block)
     // Note: presetManager listens for the "preset" parameter change in Editor,
     //       so we check whether a new selection was made.
-    static int lastPreset = 0;
-    if (presetIdx != lastPreset) {
+    if (presetIdx != lastPresetIdx) {
         presetManager.selectPreset(presetIdx, morphTimeSec);
-        lastPreset = presetIdx;
+        lastPresetIdx = presetIdx;
     }
     presetManager.advance(getSampleRate(), N);
 

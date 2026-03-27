@@ -18,6 +18,11 @@ void PresetManager::initialise(juce::AudioProcessorValueTreeState& a)
     // Register on every parameter so we can detect user gestures during morph
     for (auto* param : apvts->processor.getParameters())
         param->addListener(this);
+
+    // Build index cache — avoids O(N) string search in applyInterpolated()
+    auto& params = apvts->processor.getParameters();
+    for (int i = 0; i < (int)params.size(); ++i)
+        paramIndexCache[params[i]->getName(256).toStdString()] = i;
 }
 
 void PresetManager::selectPreset(int index, float morphTime)
@@ -109,18 +114,12 @@ void PresetManager::applyInterpolated(float t)
     const auto& s = startValues;
     const auto& e = targetValues;
 
-    // Build parameter index map — JUCE's getParameters() order matches layout
-    // We track index by manually counting (fragile but simple for our fixed param set)
-    // A more robust approach would be to look up by name, but for 25 fixed params
-    // this is sufficient.
-    auto& params = apvts->processor.getParameters();
-
     // Helper to find parameter index by ID
     auto idx = [&](const char* id) -> int {
-        for (int i = 0; i < params.size(); ++i)
-            if (params[i]->getName(256) == apvts->getParameter(id)->getName(256))
-                return i;
-        return -1;
+        auto* p = apvts->getParameter(id);
+        if (!p) return -1;
+        auto it = paramIndexCache.find(p->getName(256).toStdString());
+        return it != paramIndexCache.end() ? it->second : -1;
     };
 
     // Float params — linear interpolation
