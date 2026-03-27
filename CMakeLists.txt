@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(EpiphanyMachine VERSION 2.0.0)
+project(EpiphanyMachine VERSION 3.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -36,7 +36,6 @@ target_sources(EpiphanyMachine PRIVATE
     src/DSP/GlitchEngine.cpp
     src/DSP/DiffusionNetwork.cpp
     src/DSP/PitchDrifter.cpp
-    src/DSP/StereoWidener.cpp
     src/DSP/TextureBodyDetector.cpp
     src/DSP/DualFilter.cpp
     src/Presets/PresetManager.cpp

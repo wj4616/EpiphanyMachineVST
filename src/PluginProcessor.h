@@ -3,7 +3,7 @@
 #include "DSP/GlitchEngine.h"
 #include "DSP/DiffusionNetwork.h"
 #include "DSP/PitchDrifter.h"
-#include "DSP/StereoWidener.h"
+// #include "DSP/StereoWidener.h" // removed in v3
 #include "DSP/TextureBodyDetector.h"
 #include "DSP/DualFilter.h"
 #include "Presets/PresetManager.h"
@@ -41,7 +41,7 @@ private:
     GlitchEngine     glitchEngine;
     DiffusionNetwork diffusionNetwork;
     PitchDrifter     pitchDrifter;
-    StereoWidener    stereoWidener;
+    // StereoWidener    stereoWidener; // removed in v3 — width now controlled by FDN per-line panning
 
     // --- Epiphany additions ---
     TextureBodyDetector inputDetector;   // runs on raw input → glitch focus routing
