@@ -19,10 +19,28 @@ void PresetManager::initialise(juce::AudioProcessorValueTreeState& a)
     for (auto* param : apvts->processor.getParameters())
         param->addListener(this);
 
-    // Build index cache — avoids O(N) string search in applyInterpolated()
-    auto& params = apvts->processor.getParameters();
-    for (int i = 0; i < (int)params.size(); ++i)
-        paramIndexCache[params[i]->getName(256).toStdString()] = i;
+    // Build index cache keyed on parameter ID string — O(1) at morph time
+    const char* ids[] = {
+        "morph","mix","density","chaos","decay","damping","drift","width","feedback",
+        "bypass","freeze","glitchFocus","sensitivity",
+        "filterPos","texFilterType","texFilterCutoff","texFilterReso","texLfoRate","texLfoDepth",
+        "bodyFilterType","bodyFilterCutoff","bodyFilterReso","preset","morphTime"
+    };
+    auto& allParams = apvts->processor.getParameters();
+    for (const char* pid : ids)
+    {
+        if (auto* p = apvts->getParameter(pid))
+        {
+            for (int i = 0; i < (int)allParams.size(); ++i)
+            {
+                if (allParams[i] == p)
+                {
+                    paramIndexCache[pid] = i;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void PresetManager::selectPreset(int index, float morphTime)
@@ -114,11 +132,9 @@ void PresetManager::applyInterpolated(float t)
     const auto& s = startValues;
     const auto& e = targetValues;
 
-    // Helper to find parameter index by ID
+    // Helper to find parameter index by ID — pure O(1) hash lookup
     auto idx = [&](const char* id) -> int {
-        auto* p = apvts->getParameter(id);
-        if (!p) return -1;
-        auto it = paramIndexCache.find(p->getName(256).toStdString());
+        auto it = paramIndexCache.find(std::string(id));
         return it != paramIndexCache.end() ? it->second : -1;
     };
 
