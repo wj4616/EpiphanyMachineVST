@@ -35,7 +35,7 @@ void PresetManager::initialise(juce::AudioProcessorValueTreeState& a)
             {
                 if (allParams[i] == p)
                 {
-                    paramIndexCache[pid] = i;
+                    paramIndexCache.push_back({pid, i});
                     break;
                 }
             }
@@ -132,10 +132,11 @@ void PresetManager::applyInterpolated(float t)
     const auto& s = startValues;
     const auto& e = targetValues;
 
-    // Helper to find parameter index by ID — pure O(1) hash lookup
+    // Helper to find parameter index by ID — linear scan, no allocation
     auto idx = [&](const char* id) -> int {
-        auto it = paramIndexCache.find(std::string(id));
-        return it != paramIndexCache.end() ? it->second : -1;
+        for (const auto& [key, val] : paramIndexCache)
+            if (key == id) return val;
+        return -1;
     };
 
     // Float params — linear interpolation

@@ -3,7 +3,8 @@
 #include "PresetData.h"
 #include <set>
 #include <atomic>
-#include <unordered_map>
+#include <vector>
+#include <utility>
 
 //==============================================================================
 // PresetManager — handles preset selection and smooth parameter morphing.
@@ -51,7 +52,7 @@ private:
 
     // Flag to suppress listener during programmatic writes
     std::atomic<bool> systemChanging{false};
-    std::unordered_map<std::string, int> paramIndexCache;
+    std::vector<std::pair<std::string, int>> paramIndexCache;
 
     // Capture current APVTS float values into a PresetData struct
     PresetData captureCurrentValues() const;
