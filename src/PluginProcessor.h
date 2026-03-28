@@ -46,10 +46,6 @@ private:
     TextureBodyDetector filterDetector;  // runs on the signal being filtered → DualFilter
     DualFilter          dualFilter;
 
-    // Feedback carry-over between blocks
-    float feedbackL = 0.0f, feedbackR = 0.0f;
-    float fbLpfStateL = 0.0f, fbLpfStateR = 0.0f, fbLpfCoeff = 0.0f;
-
     // Working buffers (allocated in prepareToPlay)
     juce::AudioBuffer<float> dryBuffer;
     juce::AudioBuffer<float> glitchInputBuffer;
@@ -57,7 +53,7 @@ private:
     juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> filteredBuffer;
     juce::AudioBuffer<float> processedBuffer;
-    juce::AudioBuffer<float> fbBuf;  // feedback pitch-drift buffer — pre-allocated, never heap in processBlock
+    juce::AudioBuffer<float> feedbackBuffer;  // full-block feedback carry from previous block
 
     // SmoothedValues for per-sample parameters
     juce::SmoothedValue<float> morphSmoothed;
@@ -65,6 +61,7 @@ private:
     juce::SmoothedValue<float> feedbackSmoothed;
     juce::SmoothedValue<float> glitchFocusSmoothed;
     juce::SmoothedValue<float> bypassSmoothed;
+    juce::SmoothedValue<float> driveSmoothed;
 
     int lastPresetIdx = 0;
 
