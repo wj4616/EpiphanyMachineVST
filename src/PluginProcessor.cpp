@@ -27,7 +27,7 @@ EpiphanyMachineProcessor::createParameterLayout()
     addFloat("mix",      "Mix",      0.0f,  1.0f,   0.5f);
     addFloat("density",  "Density",  0.0f,  1.0f,   0.3f);
     addFloat("chaos",    "Chaos",    0.0f,  1.0f,   0.2f);
-    addFloat("decay",    "Decay",    0.0f,  20.0f,  4.0f,  0.5f);  // seconds
+    addFloat("decay",    "Decay",    0.0f,  20.0f,  2.0f,  0.5f);  // seconds
     addFloat("damping",  "Damping",  0.0f,  1.0f,   0.5f);
     addFloat("drift",    "Drift",    0.0f,  24.0f,  0.0f);          // semitones up
     addFloat("width",    "Width",    0.0f,  1.0f,   0.6f);
@@ -228,6 +228,7 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         {
             const float morph = morphSmoothed.getNextValue();
             feedbackSmoothed.getNextValue();  // advance, read via getCurrentValue() later
+            driveSmoothed.getNextValue();     // advance, read via getCurrentValue() in Step 10
             outL[i] = cpL[i] + giL[i] * morph + fbL[i];
             outR[i] = cpR[i] + giR[i] * morph + fbR[i];
         }
@@ -258,8 +259,11 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         {
             const float mix      = mixSmoothed.getNextValue();
             const float bypassed = bypassSmoothed.getNextValue();
-            float procL = dryL[i]*(1.0f-mix) + wetL[i]*mix;
-            float procR = dryR[i]*(1.0f-mix) + wetR[i]*mix;
+            // Equal-power mixing: keeps perceived level constant as mix sweeps 0→1
+            const float dryGain  = std::cos(mix * juce::MathConstants<float>::halfPi);
+            const float wetGain  = std::sin(mix * juce::MathConstants<float>::halfPi);
+            float procL = dryL[i]*dryGain + wetL[i]*wetGain;
+            float procR = dryR[i]*dryGain + wetR[i]*wetGain;
             outL[i] = dryL[i]*bypassed + procL*(1.0f-bypassed);
             outR[i] = dryR[i]*bypassed + procR*(1.0f-bypassed);
             processedBuffer.setSample(0, i, procL);
