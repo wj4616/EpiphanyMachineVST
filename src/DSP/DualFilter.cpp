@@ -93,7 +93,7 @@ void DualFilter::process(const juce::AudioBuffer<float>& textureIn,
 
         // Compute TPT coefficients — tan() ensures stability at all frequencies
         float texG  = std::tan(pi * modCut / (float)sampleRate);
-        float texK  = 1.0f / (0.5f + texReso * 24.5f);  // Q 0.4–50, self-oscillating above ~40
+        float texK  = 1.0f / (0.5f + texReso * 49.5f);  // Q 0.5–50, self-oscillating above ~40
         float texA1 = 1.0f / (1.0f + texG * (texG + texK));
         float texA2 = texG * texA1;
         float texA3 = texG * texA2;
@@ -102,7 +102,7 @@ void DualFilter::process(const juce::AudioBuffer<float>& textureIn,
         float bodCutoff = bodyCutoffSmoothed.getNextValue();
         float bodReso   = bodyResoSmoothed.getNextValue();
         float bodG  = std::tan(pi * bodCutoff / (float)sampleRate);
-        float bodK  = 1.0f / (0.5f + bodReso * 24.5f);
+        float bodK  = 1.0f / (0.5f + bodReso * 49.5f);
         float bodA1 = 1.0f / (1.0f + bodG * (bodG + bodK));
         float bodA2 = bodG * bodA1;
         float bodA3 = bodG * bodA2;
