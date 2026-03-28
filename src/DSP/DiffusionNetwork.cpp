@@ -49,6 +49,7 @@ void DiffusionNetwork::hadamardMix(float v[kNumLines]) const
 
 void DiffusionNetwork::process(juce::AudioBuffer<float>& buffer)
 {
+    if (buffer.getNumChannels() < 2) return;
     const int numSamples = buffer.getNumSamples();
     auto* inL = buffer.getWritePointer(0);
     auto* inR = buffer.getWritePointer(1);
