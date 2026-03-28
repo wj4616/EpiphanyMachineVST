@@ -100,7 +100,7 @@ void GlitchEngine::triggerNewGrain()
         else if (r < chaos * 0.6f) grainSpeed = 2.0f;
     }
 
-    if (drift > 0.0f)
+    if (drift > 0.0f && !grainReverse)
     {
         float randomSt = (rng.nextFloat() * 2.0f - 1.0f) * drift;
         grainSpeed *= std::pow(2.0f, randomSt / 12.0f);
