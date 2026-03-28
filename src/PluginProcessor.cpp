@@ -326,7 +326,7 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         const float drive = driveSmoothed.getCurrentValue();
         if (drive > 0.001f)
         {
-            const float foldAmt = 1.0f + drive * 3.0f;
+            const float foldAmt = 1.0f + drive * 4.0f;
             const float piC     = juce::MathConstants<float>::pi;
             auto* fL = feedbackBuffer.getWritePointer(0);
             auto* fR = feedbackBuffer.getWritePointer(1);
@@ -336,6 +336,17 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                 fL[i]    = fL[i] + drive * (std::sin(fx) / foldAmt - fL[i]);
                 fx       = fR[i] * foldAmt * piC;
                 fR[i]    = fR[i] + drive * (std::sin(fx) / foldAmt - fR[i]);
+            }
+        }
+
+        // Soft-clip feedback to prevent runaway at high feedback+drive
+        {
+            auto* fL = feedbackBuffer.getWritePointer(0);
+            auto* fR = feedbackBuffer.getWritePointer(1);
+            for (int i = 0; i < N; ++i)
+            {
+                fL[i] = fL[i] / (1.0f + std::abs(fL[i]));
+                fR[i] = fR[i] / (1.0f + std::abs(fR[i]));
             }
         }
     }
