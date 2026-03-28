@@ -21,7 +21,7 @@ void PresetManager::initialise(juce::AudioProcessorValueTreeState& a)
 
     // Build index cache keyed on parameter ID string — O(1) at morph time
     const char* ids[] = {
-        "morph","mix","density","chaos","decay","damping","drift","width","feedback",
+        "morph","mix","density","chaos","decay","damping","drift","width","feedback","drive",
         "bypass","freeze","glitchFocus","sensitivity",
         "filterPos","texFilterType","texFilterCutoff","texFilterReso","texLfoRate","texLfoDepth",
         "bodyFilterType","bodyFilterCutoff","bodyFilterReso","preset","morphTime"
@@ -95,6 +95,7 @@ PresetData PresetManager::captureCurrentValues() const
         "",                                               // name (not used for "current")
         get("morph"),    get("mix"),      get("density"), get("chaos"),
         get("decay"),    get("damping"),  get("drift"),   get("width"),   get("feedback"),
+        get("drive"),
         get("glitchFocus"), get("sensitivity"),
         getI("filterPos"),
         getI("texFilterType"), get("texFilterCutoff"), get("texFilterReso"),
@@ -155,6 +156,7 @@ void PresetManager::applyInterpolated(float t)
     WF("drift",    s.drift,    e.drift);
     WF("width",    s.width,    e.width);
     WF("feedback", s.feedback, e.feedback);
+    WF("drive",    s.drive,    e.drive);
     WF("glitchFocus", s.glitchFocus, e.glitchFocus);
     WF("sensitivity",  s.sensitivity,  e.sensitivity);
     WL("texFilterCutoff", s.texFilterCutoff, e.texFilterCutoff);  // log space
