@@ -59,11 +59,11 @@ private:
 
     // ---- Column 3: Diffusion + Feedback ----
     KnobGroup decay, damping, width;
-    KnobGroup drift, feedback;
+    KnobGroup drift, feedback, drive;
 
     // ---- Column 4: Dual Filter ----
-    // Filter position: Off/Wet/Final
-    juce::TextButton filterPosBtns[3];
+    // Filter position: Off/Wet/Final/Feedback
+    juce::TextButton filterPosBtns[4];
     // Texture filter
     juce::TextButton texTypeBtns[3];
     KnobGroup texCutoff, texReso, texLfoRate, texLfoDepth;

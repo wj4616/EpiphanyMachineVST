@@ -110,8 +110,8 @@ EpiphanyMachineEditor::EpiphanyMachineEditor(EpiphanyMachineProcessor& p)
 
     // ---- Col 4: Dual Filter ----
     // Filter position buttons
-    juce::StringArray fpLabels{"OFF","WET","FINAL"};
-    for (int i = 0; i < 3; ++i)
+    juce::StringArray fpLabels{"OFF","WET","FINAL","FB"};
+    for (int i = 0; i < 4; ++i)
     {
         filterPosBtns[i].setButtonText(fpLabels[i]);
         filterPosBtns[i].setClickingTogglesState(false);
@@ -124,6 +124,9 @@ EpiphanyMachineEditor::EpiphanyMachineEditor(EpiphanyMachineProcessor& p)
         };
         addAndMakeVisible(filterPosBtns[i]);
     }
+
+    // ---- Col 3: Drive (in feedback loop) ----
+    drive.setup("drive", "DRIVE", p.apvts, laf, this);
 
     // Texture type buttons
     juce::StringArray typeLabels{"LP","HP","BP"};
@@ -208,7 +211,7 @@ void EpiphanyMachineEditor::updateTypeButtons(juce::TextButton* btns, const char
 void EpiphanyMachineEditor::updateFilterButtons()
 {
     int fp = (int)processor.apvts.getRawParameterValue("filterPos")->load();
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 4; ++i)
         filterPosBtns[i].setToggleState(i == fp, juce::dontSendNotification);
 }
 
@@ -233,6 +236,7 @@ void EpiphanyMachineEditor::updateValueLabels()
     width.valueLabel.setText(juce::String(getV("width"), 2), juce::dontSendNotification);
     drift.valueLabel.setText(juce::String(getV("drift"), 1), juce::dontSendNotification);
     feedback.valueLabel.setText(juce::String(getV("feedback"), 2), juce::dontSendNotification);
+    drive.valueLabel.setText(juce::String(getV("drive"), 2), juce::dontSendNotification);
     texCutoff.valueLabel.setText(fmtHz(getV("texFilterCutoff")), juce::dontSendNotification);
     texReso.valueLabel.setText(juce::String(getV("texFilterReso"), 2), juce::dontSendNotification);
     texLfoRate.valueLabel.setText(juce::String(getV("texLfoRate"), 1)+"Hz", juce::dontSendNotification);
@@ -259,8 +263,8 @@ void EpiphanyMachineEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font(20.0f, juce::Font::bold));
     g.drawText("EPIPHANY MACHINE", 12, 8, 400, 32, juce::Justification::centredLeft);
     g.setFont(juce::Font(9.0f));
-    g.setColour(CustomLookAndFeel::textSecondary());
-    g.drawText("v2.0", getWidth() - 44, 8, 36, 14, juce::Justification::centredRight);
+    g.setColour(CustomLookAndFeel::gold().withAlpha(0.5f));
+    g.drawText("v3", getWidth() - 36, 8, 28, 14, juce::Justification::centredRight);
 
     // Signal flow indicator strip
     const int sfY = 104;
@@ -300,7 +304,7 @@ void EpiphanyMachineEditor::paint(juce::Graphics& g)
 
     // "FEEDBACK LOOP" sub-panel outline in col 3 (matches resized() fbTop=+170)
     const int fbPanelY = col[2].getY() + 158;
-    const int fbPanelH = 100;
+    const int fbPanelH = 160;
     juce::Rectangle<int> fbR(col[2].getX() + 4, fbPanelY, col[2].getWidth() - 8, fbPanelH);
     g.setColour(CustomLookAndFeel::neonSecondary().withAlpha(0.15f));
     g.fillRoundedRectangle(fbR.toFloat(), 4.0f);
@@ -407,15 +411,15 @@ void EpiphanyMachineEditor::resized()
         const int fbTop = c.getY() + 170;           // was +200
         drift.place(c.getX() + 10, fbTop, ks, this);
         feedback.place(c.getX() + c.getWidth() - 10 - ks, fbTop, ks, this);
-        (void)cx;
+        drive.place(cx - ks/2, fbTop + ks + 28, ks, this);
     }
 
     // ---- Col 4: DUAL FILTER ----
     {
         const auto& c = col[3];
         const int btnH = 20;                         // was 22
-        const int btnW = (c.getWidth() - 8) / 3;
-        for (int i = 0; i < 3; ++i)
+        const int btnW = (c.getWidth() - 8) / 4;
+        for (int i = 0; i < 4; ++i)
             filterPosBtns[i].setBounds(c.getX() + 4 + i*btnW, c.getY() + 20, btnW - 2, btnH);
 
         const int texTop = c.getY() + 48;            // was +58
