@@ -95,7 +95,6 @@ void EpiphanyMachineProcessor::prepareToPlay(double sr, int spb)
     glitchEngine.prepare(sr, spb);
     diffusionNetwork.prepare(sr, spb);
     pitchDrifter.prepare(sr, spb);
-    // stereoWidener.prepare(sr, spb); // removed in v3
     inputDetector.prepare(sr, spb);
     filterDetector.prepare(sr, spb);
     dualFilter.prepare(sr, spb);
@@ -172,7 +171,6 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     diffusionNetwork.setDamping(getV("damping"));
     diffusionNetwork.setFreezeActive(isFrozen);
     pitchDrifter.setDrift(getV("drift"));
-    // stereoWidener.setWidth(getV("width")); // removed in v3 — width moved to FDN per-line panning
     inputDetector.setSensitivity(getV("sensitivity"));
     filterDetector.setSensitivity(getV("sensitivity"));
     dualFilter.setTexFilterType((int)getV("texFilterType"));
@@ -309,7 +307,6 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     // Step 5: Diffusion Network (FDN reverb) + Stereo Widener
     //==========================================================================
     diffusionNetwork.process(buffer);
-    // stereoWidener.process(buffer); // removed in v3 — panning integrated into FDN
 
     // Copy wet (post-widener) into wetBuffer
     wetBuffer.copyFrom(0, 0, buffer, 0, 0, N);
