@@ -2,11 +2,8 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-// DiffusionNetwork — 4-line Feedback Delay Network (FDN) reverb.
-//
-// FREEZE mode: stops new input entering the FDN and sets feedback to ~0.999,
-// creating an infinite sustain of the current tail. All transitions are
-// smoothed with SmoothedValues to avoid clicks.
+// DiffusionNetwork — 8-line FDN reverb.
+// v3: 8 lines, 8x8 FHT, RT60 decay, per-line pan LFOs, setDecaySeconds API.
 //==============================================================================
 class DiffusionNetwork
 {
@@ -15,37 +12,35 @@ public:
     void process(juce::AudioBuffer<float>& buffer);  // in-place stereo
     void reset();
 
-    void setDecay(float d)        { decayParam = d; }
-    void setDamping(float d)      { dampingParam = d; }
+    void setDecaySeconds(float s)  { decaySeconds = std::max(0.01f, s); }
+    void setDamping(float d)       { dampingParam = d; }
+    void setWidth(float w)         { widthParam = juce::jlimit(0.0f, 1.0f, w); }
     void setFreezeActive(bool on);
 
 private:
-    static constexpr int kNumLines = 4;
-    static constexpr int kBufSize  = 2048;
+    static constexpr int kNumLines = 8;
+    static constexpr int kBufSize  = 4096;
     static constexpr int kBufMask  = kBufSize - 1;
-    static constexpr int kBaseLengths[kNumLines] = { 1087, 1283, 1637, 1933 };
-    int delayLengths[kNumLines] = {};
+    static constexpr int kBaseLengths[kNumLines] = {1087,1283,1637,1933,2311,2719,3109,3511};
+    static constexpr float kLfoRates[kNumLines]  = {0.07f,0.11f,0.15f,0.19f,0.23f,0.29f,0.31f,0.37f};
+    static constexpr float kBasePan[kNumLines]   = {-0.8f,0.8f,-0.4f,0.4f,-0.6f,0.6f,-0.2f,0.2f};
 
+    int delayLengths[kNumLines] = {};
     float bufL[kNumLines][kBufSize] = {};
     float bufR[kNumLines][kBufSize] = {};
     int   writeIndex[kNumLines] = {};
-    float lpfStateL[kNumLines] = {};
-    float lpfStateR[kNumLines] = {};
-    float lfoPhase[kNumLines]  = {};
-    static constexpr float kLfoRates[kNumLines] = { 0.3f, 0.5f, 0.7f, 0.9f };
+    float lpfStateL[kNumLines]  = {};
+    float lpfStateR[kNumLines]  = {};
+    float lfoPhase[kNumLines]   = {};
 
-    float decayParam   = 0.6f;
+    float decaySeconds = 6.0f;
     float dampingParam = 0.5f;
+    float widthParam   = 0.6f;
     double sampleRate  = 48000.0;
 
-    //==========================================================================
-    // Freeze SmoothedValues — ramp over ~42ms (2048 samples at 48kHz) so
-    // toggling freeze creates no audible click or pop.
-    //==========================================================================
-    juce::SmoothedValue<float> freezeInputGain;     // 1.0→0.0 when freezing
-    juce::SmoothedValue<float> freezeFeedbackBoost; // 0.0→1.0 when freezing
-    juce::SmoothedValue<float> freezeDampingMute;   // 0.0→1.0 when freezing
-
+    juce::SmoothedValue<float> freezeInputGain;
+    juce::SmoothedValue<float> freezeFeedbackBoost;
+    juce::SmoothedValue<float> freezeDampingMute;
     bool isFrozen = false;
 
     void hadamardMix(float v[kNumLines]) const;
