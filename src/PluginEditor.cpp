@@ -304,7 +304,7 @@ void EpiphanyMachineEditor::paint(juce::Graphics& g)
 
     // "FEEDBACK LOOP" sub-panel outline in col 3 (matches resized() fbTop=+170)
     const int fbPanelY = col[2].getY() + 158;
-    const int fbPanelH = 160;
+    const int fbPanelH = 170;
     juce::Rectangle<int> fbR(col[2].getX() + 4, fbPanelY, col[2].getWidth() - 8, fbPanelH);
     g.setColour(CustomLookAndFeel::neonSecondary().withAlpha(0.15f));
     g.fillRoundedRectangle(fbR.toFloat(), 4.0f);
