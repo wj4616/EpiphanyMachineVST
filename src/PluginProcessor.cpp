@@ -96,7 +96,7 @@ void EpiphanyMachineProcessor::prepareToPlay(double sr, int spb)
     feedbackBuffer.setSize(2, spb);
     feedbackBuffer.clear();
 
-    const double sm = 0.02;
+    const double sm = 0.02; // 20 ms ramp for most params
     morphSmoothed.reset(sr, sm);
     mixSmoothed.reset(sr, sm);
     feedbackSmoothed.reset(sr, sm);
@@ -279,6 +279,7 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         const auto* dryR  = dryBuffer.getReadPointer(1);
         const auto* filtL = filteredBuffer.getReadPointer(0);
         const auto* filtR = filteredBuffer.getReadPointer(1);
+        // Use block-constant bypass gain (smoother already advanced in Step 7); acceptable 1-block transition approximation
         const float bypassGain = bypassSmoothed.getCurrentValue();
         for (int i = 0; i < N; ++i)
         {
@@ -339,7 +340,7 @@ void EpiphanyMachineProcessor::processBlock(juce::AudioBuffer<float>& buffer,
             }
         }
 
-        // Soft-clip feedback to prevent runaway at high feedback+drive
+        // Soft-clip feedback to prevent runaway at high feedback+drive (applied unconditionally, including freeze mode)
         {
             auto* fL = feedbackBuffer.getWritePointer(0);
             auto* fR = feedbackBuffer.getWritePointer(1);
