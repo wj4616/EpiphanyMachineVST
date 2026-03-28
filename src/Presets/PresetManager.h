@@ -79,7 +79,4 @@ private:
     void writeParam(const char* id, int listenerIdx, float value);
     void writeChoice(const char* id, int value, float progress, int startVal, int endVal);
 
-    // We store the parameter index offset to map listener index → APVTS param
-    // JUCE gives us the index within the processor's getParameters() array.
-    int paramBaseIndex = 0;
 };
