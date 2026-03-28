@@ -11,7 +11,7 @@ public:
 
     void setDensity(float d) { density = d; }
     void setChaos(float c)   { chaos = c; }
-    void setDrift(float d)   { drift = d; }
+    void setDrift(float d)   { drift = juce::jlimit(0.0f, 24.0f, d); }
 
 private:
     static constexpr int kBufSize = 131072;

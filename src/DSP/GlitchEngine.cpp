@@ -42,6 +42,8 @@ float GlitchEngine::getWindowValue(int samplePos, int grainLenSamples, float gra
 
 void GlitchEngine::process(juce::AudioBuffer<float>& buffer)
 {
+    if (buffer.getNumChannels() < 2) return;
+
     const int N  = buffer.getNumSamples();
     auto* inL = buffer.getWritePointer(0);
     auto* inR = buffer.getWritePointer(1);
@@ -50,13 +52,13 @@ void GlitchEngine::process(juce::AudioBuffer<float>& buffer)
     {
         bufL[writeHead & kBufMask] = inL[i];
         bufR[writeHead & kBufMask] = inR[i];
-        ++writeHead;
+        writeHead = (writeHead + 1) & kBufMask;
 
         if (grainSamplesLeft <= 0) triggerNewGrain();
 
         const int consumed = grainLength - grainSamplesLeft;
         const float readPos = grainReverse
-            ? (float)(grainStart + grainLength - consumed)
+            ? (float)(grainStart + grainLength - 1) - (float)consumed * grainSpeed
             : (float)grainStart + (float)consumed * grainSpeed;
 
         const int   idx0 = (int)readPos & kBufMask;
