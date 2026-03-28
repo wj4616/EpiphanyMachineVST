@@ -2,7 +2,6 @@
 
 void DiffusionNetwork::setFreezeActive(bool on)
 {
-    isFrozen = on;
     freezeInputGain.setTargetValue(on ? 0.0f : 1.0f);
     freezeFeedbackBoost.setTargetValue(on ? 1.0f : 0.0f);
     freezeDampingMute.setTargetValue(on ? 1.0f : 0.0f);
@@ -29,7 +28,9 @@ void DiffusionNetwork::reset()
     {
         std::fill(std::begin(bufL[i]), std::end(bufL[i]), 0.0f);
         std::fill(std::begin(bufR[i]), std::end(bufR[i]), 0.0f);
-        writeIndex[i] = lpfStateL[i] = lpfStateR[i] = 0;
+        writeIndex[i]  = 0;
+        lpfStateL[i]   = 0.0f;
+        lpfStateR[i]   = 0.0f;
     }
 }
 
@@ -55,6 +56,16 @@ void DiffusionNetwork::process(juce::AudioBuffer<float>& buffer)
     const float damping = dampingParam * 0.9f;
     const float twoPi   = juce::MathConstants<float>::twoPi;
 
+    // Pre-compute RT60 gains and LFO increments (constant per block)
+    float normalGains[kNumLines];
+    float lfoInc[kNumLines];
+    for (int line = 0; line < kNumLines; ++line)
+    {
+        normalGains[line] = std::pow(10.0f,
+            -3.0f * (float)delayLengths[line] / (decaySeconds * (float)sampleRate));
+        lfoInc[line] = kLfoRates[line] / (float)sampleRate;
+    }
+
     for (int i = 0; i < numSamples; ++i)
     {
         const float inputGain  = freezeInputGain.getNextValue();
@@ -62,42 +73,43 @@ void DiffusionNetwork::process(juce::AudioBuffer<float>& buffer)
         const float dampMute   = freezeDampingMute.getNextValue();
         const float activeDamp = damping * (1.0f - dampMute);
 
-        float readL[kNumLines], readR[kNumLines];
+        float tapL[kNumLines], tapR[kNumLines];
 
+        // Step 1: Read delay outputs, apply feedback gain + LPF
         for (int line = 0; line < kNumLines; ++line)
         {
-            // RT60 feedback gain: amplitude decays to -60dB in decaySeconds
-            const float normalGain = std::pow(10.0f,
-                -3.0f * (float)delayLengths[line] / (decaySeconds * (float)sampleRate));
-            const float fbGain = normalGain * (1.0f - fbBoost) + 0.999f * fbBoost;
-
+            const float fbGain = normalGains[line] * (1.0f - fbBoost) + 0.999f * fbBoost;
             int readIdx = (writeIndex[line] - delayLengths[line] + kBufSize) & kBufMask;
-            readL[line] = bufL[line][readIdx];
-            readR[line] = bufR[line][readIdx];
-
-            float fL = readL[line] * fbGain;
-            float fR = readR[line] * fbGain;
+            float fL = bufL[line][readIdx] * fbGain;
+            float fR = bufR[line][readIdx] * fbGain;
             lpfStateL[line] = (1.0f - activeDamp) * fL + activeDamp * lpfStateL[line] + 1e-18f;
             lpfStateR[line] = (1.0f - activeDamp) * fR + activeDamp * lpfStateR[line] + 1e-18f;
+            tapL[line] = lpfStateL[line];
+            tapR[line] = lpfStateR[line];
 
-            bufL[line][writeIndex[line]] = inL[i] * inputGain + lpfStateL[line];
-            bufR[line][writeIndex[line]] = inR[i] * inputGain + lpfStateR[line];
-            writeIndex[line] = (writeIndex[line] + 1) & kBufMask;
-
-            lfoPhase[line] += kLfoRates[line] / (float)sampleRate;
+            lfoPhase[line] += lfoInc[line];
             if (lfoPhase[line] >= 1.0f) lfoPhase[line] -= 1.0f;
         }
 
-        hadamardMix(readL);
-        hadamardMix(readR);
+        // Step 2: FHT mixing in feedback path — cross-couples all delay lines
+        hadamardMix(tapL);
+        hadamardMix(tapR);
 
-        // Pan each line according to base position + slow LFO, scaled by width
+        // Step 3: Write mixed feedback + new input to delay lines
+        for (int line = 0; line < kNumLines; ++line)
+        {
+            bufL[line][writeIndex[line]] = inL[i] * inputGain + tapL[line];
+            bufR[line][writeIndex[line]] = inR[i] * inputGain + tapR[line];
+            writeIndex[line] = (writeIndex[line] + 1) & kBufMask;
+        }
+
+        // Step 4: Sum outputs with per-line panning
         float outL = 0.0f, outR = 0.0f;
         for (int line = 0; line < kNumLines; ++line)
         {
             float panLfo = 0.05f * std::sin(lfoPhase[line] * twoPi);
             float pan    = juce::jlimit(-1.0f, 1.0f, kBasePan[line] * widthParam + panLfo);
-            float sig    = (readL[line] + readR[line]) * 0.5f;
+            float sig    = (tapL[line] + tapR[line]) * 0.5f;
             outL += sig * 0.5f * (1.0f - pan);
             outR += sig * 0.5f * (1.0f + pan);
         }

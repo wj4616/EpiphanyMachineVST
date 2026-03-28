@@ -19,7 +19,7 @@ public:
 
 private:
     static constexpr int kNumLines = 8;
-    static constexpr int kBufSize  = 4096;
+    static constexpr int kBufSize  = 16384;
     static constexpr int kBufMask  = kBufSize - 1;
     static constexpr int kBaseLengths[kNumLines] = {1087,1283,1637,1933,2311,2719,3109,3511};
     static constexpr float kLfoRates[kNumLines]  = {0.07f,0.11f,0.15f,0.19f,0.23f,0.29f,0.31f,0.37f};
@@ -41,7 +41,5 @@ private:
     juce::SmoothedValue<float> freezeInputGain;
     juce::SmoothedValue<float> freezeFeedbackBoost;
     juce::SmoothedValue<float> freezeDampingMute;
-    bool isFrozen = false;
-
     void hadamardMix(float v[kNumLines]) const;
 };
